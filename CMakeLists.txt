@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-# Old enough to support Ubuntu Xenial.
-cmake_minimum_required(VERSION 3.5.1)
+cmake_minimum_required(VERSION 3.13)
 
 if(POLICY CMP0048)
   cmake_policy(SET CMP0048 NEW)
@@ -56,8 +55,6 @@ if(USEPCRE)
   list(APPEND EXTRA_TARGET_LINK_LIBRARIES pcre)
 endif()
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
 set(RE2_SOURCES
     re2/bitstate.cc
     re2/compile.cc
@@ -83,7 +80,11 @@ set(RE2_SOURCES
     util/strutil.cc
     )
 
-add_library(re2 ${RE2_SOURCES})
+add_library(re2)
+target_sources(re2 PRIVATE ${RE2_SOURCES})
+target_include_directories(re2
+        PUBLIC
+          ${CMAKE_CURRENT_SOURCE_DIR}/)
 add_library(re2::re2 ALIAS re2)
 
 if(RE2_BUILD_TESTING)
@@ -99,6 +100,9 @@ if(RE2_BUILD_TESTING)
       )
 
   add_library(testing STATIC ${TESTING_SOURCES})
+  target_include_directories(testing
+          PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/)
 
   set(TEST_TARGETS
       charclass_test
