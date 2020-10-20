@@ -84,10 +84,12 @@ add_library(re2)
 target_sources(re2 PRIVATE ${RE2_SOURCES})
 target_include_directories(re2
         PUBLIC
-          ${CMAKE_CURRENT_SOURCE_DIR}/)
+          $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+          $<INSTALL_INTERFACE:include>)
 add_library(re2::re2 ALIAS re2)
 
 if(RE2_BUILD_TESTING)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR})
   set(TESTING_SOURCES
       re2/testing/backtrack.cc
       re2/testing/dump.cc
@@ -102,7 +104,7 @@ if(RE2_BUILD_TESTING)
   add_library(testing STATIC ${TESTING_SOURCES})
   target_include_directories(testing
           PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/)
+            ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
   set(TEST_TARGETS
       charclass_test
@@ -145,10 +147,10 @@ if(RE2_BUILD_TESTING)
 endif()
 
 set(RE2_HEADERS
-    re2/filtered_re2.h
-    re2/re2.h
-    re2/set.h
-    re2/stringpiece.h
+    include/re2/filtered_re2.h
+    include/re2/re2.h
+    include/re2/set.h
+    include/re2/stringpiece.h
     )
 
 install(FILES ${RE2_HEADERS}
